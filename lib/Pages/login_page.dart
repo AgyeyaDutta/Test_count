@@ -85,7 +85,7 @@ void dispose(){
            const SizedBox(height: 20,),
               //welcome msg
           
-               Text("Hey there :)",
+               Text("Hello there",
               style: GoogleFonts.bebasNeue(
                 fontSize: 50
               ),
