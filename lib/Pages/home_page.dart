@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demo_count/Pages/login_page.dart';
@@ -28,6 +26,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeSCreen extends State<HomeScreen> {
 User? userId= FirebaseAuth.instance.currentUser;
 int _counter = 0;
+String _imageUrl = '';
 
   // Retrieve the stored value from Firebase when the app initializes
   @override
@@ -49,8 +48,10 @@ int _counter = 0;
     setState(() {
       if (doc.exists){
         _counter = doc.data()?['value']?? 0;
+        _imageUrl = doc.data()?['imageUrl']??'';
       } else {
         _counter = 0;
+        _imageUrl = '';
       }
       _isLoading = false;
     });
@@ -64,7 +65,8 @@ void _incrementCounter() async{
   });
   await FirebaseFirestore.instance.collection('Counts').doc(userId?.uid).set({
     "value": _counter,
-    "userId": userId?.uid
+    "userId": userId?.uid,
+    "imageUrl": _imageUrl,
   });
 }
  @override
@@ -84,12 +86,23 @@ void _incrementCounter() async{
         ],
       ),
       body: Center(
-
-        child: _isLoading ? CircularProgressIndicator():
+         child: _isLoading ? CircularProgressIndicator():
+         Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _imageUrl.isNotEmpty? Image.network(
+              _imageUrl,
+              height: 200,
+              width: 200,
+              fit: BoxFit.contain,
+            ): CircularProgressIndicator(),
+            SizedBox(height: 20,),
          Text(
           'You have pressed the button $_counter times',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
+          ]
+      ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
@@ -99,3 +112,4 @@ void _incrementCounter() async{
     );
   }
 }
+
